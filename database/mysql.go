@@ -6,11 +6,12 @@ import (
 	"log"
 	"strings"
 
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/structs"
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
 	"github.com/gchaincl/dotsql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/micro/go-micro/errors"
 	uuid "github.com/satori/go.uuid"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/structs"
 )
 
 var (
@@ -22,6 +23,7 @@ var (
 const (
 	userDBSchema     = "./database/schema.sql"
 	insertQuery      = "insert"
+	selectLoginQuery = "select-login"
 	selectEmailQuery = "select-email"
 )
 
@@ -50,6 +52,22 @@ func New(url string) {
 	db = d
 }
 
+func Login(loginData structs.LoginCredential) (*structs.User, error) {
+	user := &structs.User{}
+
+	row, err := dot.QueryRow(db, selectLoginQuery, loginData.Email, utils.HashPassword(loginData.Password))
+
+	if err := row.Scan(&user.Id, &user.Sub, &user.Name, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.NotFound(loginData.Email, err.Error())
+		}
+
+		return nil, errors.InternalServerError(loginData.Email, err.Error())
+	}
+
+	return user, err
+}
+
 func Read(email string) (*structs.User, error) {
 	user := &structs.User{}
 
@@ -73,7 +91,8 @@ func Create(user *structs.User) (sql.Result, error) {
 	}
 
 	user.Id = uuid.NewV4().String()
-	result, err := dot.Exec(db, insertQuery, user.Id, user.Sub, user.Name, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, user.EmailVerified, user.Gender)
+	password := utils.HashPassword(user.Password)
+	result, err := dot.Exec(db, insertQuery, user.Id, user.Sub, user.Name, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, password, user.EmailVerified, user.Gender)
 
 	if err != nil {
 		return nil, errors.InternalServerError("", err.Error())

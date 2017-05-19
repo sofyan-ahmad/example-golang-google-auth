@@ -1,17 +1,18 @@
 package main
 
 import (
-	"github.com/gin-gonic/contrib/sessions"
-	"github.com/gin-gonic/gin"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/api/handlers"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/database"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/middleware"
 	views "bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/views"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	router := gin.Default()
-	store := sessions.NewCookieStore([]byte(handlers.RandToken(64)))
+	store := sessions.NewCookieStore([]byte("super-secret-key"))
+
 	store.Options(sessions.Options{
 		Path:   "/",
 		MaxAge: 86400 * 7,
@@ -21,7 +22,8 @@ func main() {
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-	router.Use(sessions.Sessions("goquestsession", store))
+	router.Use(sessions.Sessions("my-session", store))
+
 	router.Static("/css", "./static/css")
 	router.Static("/img", "./static/img")
 	router.LoadHTMLGlob("./views/templates/*")
@@ -30,15 +32,16 @@ func main() {
 	router.GET("/", views.IndexView)
 	router.GET("/login", views.LoginView)
 	router.GET("/register", views.RegisterView)
-	// router.GET("/profile", handlers.FieldHandler)
 
 	// API
-	router.GET("/api/auth", handlers.AuthHandler)
+	router.POST("/api/login", handlers.Login)
+	router.POST("/api/register", handlers.Register)
+	router.GET("/api/auth", handlers.GoogleAuth)
 
-	authorized := router.Group("/battle")
+	authorized := router.Group("/secure")
 	authorized.Use(middleware.AuthorizeRequest())
 	{
-		authorized.GET("/field", handlers.FieldHandler)
+		authorized.GET("/", views.UserProfileView)
 	}
 
 	router.Run("127.0.0.1:9090")

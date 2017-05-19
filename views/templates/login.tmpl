@@ -10,34 +10,64 @@
 
 <body>
     <div class="container">
-        <form class="form-signin">
+        <div class="form-signin">
             <h4 class="form-signin-heading">Login</h4>
 
             <hr/>
 
-            <div class="form-group">
-                <label for="inputEmail" class="sr-only">Email address</label>
-                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-            </div>
+            <form id="formLogin">
+                <div class="form-group">
+                    <label for="inputEmail" class="sr-only">Email address</label>
+                    <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+                </div>
 
-            <div class="form-group">
-                <label for="inputPassword" class="sr-only">Password</label>
-                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-            </div>
+                <div class="form-group">
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                </div>
 
-            <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+                <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+            </form>
 
             <hr/>
             <a class="btn btn-danger btn-block" href="{{ .link }}">Login with Google!</a>
 
             <hr/>
-            <a class="btn btn-success btn-block" href="{{ .link }}">Register New Account</a>
-        </form>
+            <a class="btn btn-success btn-block" href="{{ .registerPath }}">Register New Account</a>
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function() {
+            var base_url = "http://localhost:9090/"
+            $("#formLogin").submit(function(event) {
+                event.preventDefault();
+
+                var url = base_url + "api/login"
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: JSON.stringify({
+                        email: $('#inputEmail').val(),
+                        password: $('#inputPassword').val(),
+                    }),
+                    success: function() {
+                        window.location.replace(base_url + "secure/");
+                    },
+                    error: (function(error) {
+                        alert(error.responseText);
+                    }),
+                    dataType: "json",
+                    contentType: "application/json"
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

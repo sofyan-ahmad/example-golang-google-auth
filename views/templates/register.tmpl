@@ -10,7 +10,7 @@
 
 <body>
     <div class="container">
-        <form class="form-signin">
+        <form class="form-signin" id="formRegister">
             <h4 class="form-signin-heading">Register New Account</h4>
 
             <hr/>
@@ -21,22 +21,76 @@
             </div>
 
             <div class="form-group">
+                <label for="inputGivenName" class="sr-only">Email address</label>
+                <input type="text" id="inputGivenName" class="form-control" placeholder="Given Name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="inputFamilyName" class="sr-only">Email address</label>
+                <input type="text" id="inputFamilyName" class="form-control" placeholder="Family Name" required>
+            </div>
+
+            <div class="form-group">
                 <label for="inputPassword" class="sr-only">Password</label>
                 <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
             </div>
 
             <div class="form-group">
                 <label for="inputPassword" class="sr-only">Confirm Password</label>
-                <input type="password" id="inputPassword" class="form-control" placeholder="Confirm Password" required>
+                <input type="password" id="inputPasswordConfirm" class="form-control" placeholder="Confirm Password" required>
             </div>
 
             <button class="btn btn-primary btn-block" type="submit">Register</button>
         </form>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+    <script>
+        $(document).ready(function() {
+            var base_url = "http://localhost:9090/"
+            $("#formRegister").submit(function(event) {
+                event.preventDefault();
+
+                if ($('#inputPasswordConfirm').val() !== $('#inputPassword').val()) {
+                    alert('Confirm password is not match');
+                    return;
+                }
+
+                /* get the action attribute from the <form action=""> element */
+                var url = base_url + "api/register"
+
+                /* Send the data using post with element id name and name2*/
+                var posting = $.post(url, {
+                    email: $('#inputEmail').val(),
+                    givenName: $('#inputGivenName').val(),
+                    familyName: $('#inputFamilyName').val(),
+                    password: $('#inputPassword').val(),
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: JSON.stringify({
+                        email: $('#inputEmail').val(),
+                        givenName: $('#inputGivenName').val(),
+                        familyName: $('#inputFamilyName').val(),
+                        password: $('#inputPassword').val(),
+                    }),
+                    success: function() {
+                        alert('user created successfully');
+                        window.location.replace(base_url + "login/");
+                    },
+                    error: (function(error) {
+                        alert(error.responseText);
+                    }),
+                    dataType: "json",
+                    contentType: "application/json"
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

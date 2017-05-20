@@ -18,10 +18,15 @@
             </div>
 
             <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+
+            <button id="forgotPassword" class="btn btn-sm btn-link float-right">Forgot Password?</button>
+
         </form>
 
         <hr/>
-        <a class="btn btn-danger btn-block" href="{{ .link }}">Login with Google!</a>
+        <a class="btn btn-danger btn-block" href="{{ .link }}">
+            <i class="fa fa-google"></i> Login with Google!
+        </a>
 
         <hr/>
         <a class="btn btn-success btn-block" href="{{ .registerPath }}">Register New Account</a>

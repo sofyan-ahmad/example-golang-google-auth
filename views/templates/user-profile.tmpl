@@ -1,7 +1,90 @@
-{{template "header.tmpl"}}
+{{template "header.tmpl" .}}
 
-<div class="container" style="background: rgba(255, 255, 255, .6); padding: 10px;">
-    <h1>Welcome {{ .user }}.</h1>
+<div class="container">
+    <div class="container-content">
+        <div>
+            <button class="float-right btn btn-success">
+                <i class="fa fa-edit"></i> Edit User
+            </button>
+            <h4>User Profile</h4>
+        </div>
+        <hr/>
+
+        <div class="form-group row">
+            <label class="col-md-3">Picture</label>
+            <div class="col-md-9">
+                <img id="picture" src="" width="100">
+                <button class="btn btn-sm btn-primary">Change Picture</button>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3">Email</label>
+            <div class="col-md-9">
+                <input id="inputEmail" class="form-control"></input>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-3">Given Name</label>
+            <div class="col-md-9">
+                <input id="inputGivenName" class="form-control"></input>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-3">Family Name</label>
+            <div class="col-md-9">
+                <input id="inputFamilyName" class="form-control"></input>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-3">Gender</label>
+            <div class="col-md-9">
+                <input id="inputGenderMale" type="radio" name="gender" value="male"> Male<br>
+                <input id="inputGenderFemale " type="radio" name="gender" value="female"> Female<br>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+<script>
+    $(document).ready(function() {
+        var getCurrentUserProfile = function() {
+            var url = base_url + "api/userprofile/"
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function(user) {
+                    $("#inputEmail").val(user.email)
+                    $("#inputFamilyName").val(user.family_name)
+                    $("#inputGivenName").val(user.given_name)
+                    $("#inputGender").val(user.gender)
+
+                    if (user.picture.length > 0)
+                        $('#picture').attr('src', user.picture);
+                    else {
+                        $('#picture').attr('src', base_url + "img/default-avatar.png");
+                    }
+
+                    if (user.gender === "female") {
+                        $("#inputGenderFemale").prop("checked", true);
+                    } else {
+                        $("#inputGenderMale").prop("checked", true);
+                    }
+                },
+                error: (function(error) {
+                    alert(error.statusText);
+                }),
+                dataType: "json",
+                contentType: "application/json"
+            });
+        };
+
+        getCurrentUserProfile();
+    });
+</script>
+
 
 {{template "footer.tmpl"}}

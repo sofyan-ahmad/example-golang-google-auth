@@ -32,6 +32,9 @@
         </div>
 
         <button class="btn btn-primary btn-block" type="submit">Register</button>
+        <hr/>
+        <a href="/" class="btn btn-danger btn-block">Cancel</a>
+
     </form>
 </div>
 
@@ -61,8 +64,8 @@
                 url: url,
                 data: JSON.stringify({
                     email: $('#inputEmail').val(),
-                    givenName: $('#inputGivenName').val(),
-                    familyName: $('#inputFamilyName').val(),
+                    given_name: $('#inputGivenName').val(),
+                    family_name: $('#inputFamilyName').val(),
                     password: $('#inputPassword').val(),
                 }),
                 success: function() {

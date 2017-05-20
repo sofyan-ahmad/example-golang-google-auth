@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/signin.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
@@ -17,3 +18,47 @@
 </head>
 
 <body>
+
+    {{if .userId}}
+
+    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <a class="navbar-brand" href="#">OAuth Test</a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Welcome {{ .userName}}</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <button id="logout" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <script>
+        $(document).ready(function() {
+            $("#logout").click(function() {
+                var url = base_url + "api/logout"
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function() {
+                        window.location.replace(base_url + "login/");
+                    },
+                    error: (function(error) {
+                        alert(error.responseText);
+                    }),
+                    dataType: "json",
+                    contentType: "application/json"
+                });
+            });
+        });
+    </script>
+
+    {{end}}

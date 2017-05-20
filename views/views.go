@@ -15,7 +15,14 @@ func getLoginURL(state string) string {
 // IndexHandler handels /.
 func IndexView(c *gin.Context) {
 	req := c.Request
-	http.Redirect(c.Writer, req, utils.BaseUrl+"/secure", 301)
+	session := sessions.Default(c)
+	userId := session.Get("user-id")
+
+	if userId == nil || userId == "" {
+		http.Redirect(c.Writer, req, utils.BaseUrl+"login", 307)
+	} else {
+		http.Redirect(c.Writer, req, utils.BaseUrl+"secure", 307)
+	}
 }
 
 // LoginView handles the login procedure.
@@ -26,7 +33,7 @@ func LoginView(c *gin.Context) {
 	session.Save()
 
 	link := getLoginURL(state)
-	registerPath := utils.BaseUrl + "/register"
+	registerPath := utils.BaseUrl + "register"
 	c.HTML(http.StatusOK, "login", gin.H{"baseUrl": utils.BaseUrl, "link": link, "registerPath": registerPath})
 }
 
@@ -39,6 +46,8 @@ func RegisterView(c *gin.Context) {
 // FieldView is a rudementary View for logged in users.
 func UserProfileView(c *gin.Context) {
 	session := sessions.Default(c)
-	userID := session.Get("user-id")
-	c.HTML(http.StatusOK, "userProfile", gin.H{"baseUrl": utils.BaseUrl, "user": userID})
+	userId := session.Get("user-id")
+	userName := session.Get("user-name")
+
+	c.HTML(http.StatusOK, "userProfile", gin.H{"baseUrl": utils.BaseUrl, "userId": userId, "userName": userName})
 }

@@ -1,7 +1,8 @@
-package handlers
+package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -31,7 +32,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	err := services.SetSession(user.Email, c)
+	err := services.SetSession(*user, c)
 
 	if err != nil {
 		log.Println(err)
@@ -40,6 +41,18 @@ func Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func Logout(c *gin.Context) {
+	err := services.ClearSession(c)
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while clearing session. Please try again."})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 func GoogleAuth(c *gin.Context) {
@@ -78,7 +91,7 @@ func GoogleAuth(c *gin.Context) {
 		return
 	}
 
-	err = services.SetSession(u.Email, c)
+	err = services.SetSession(u, c)
 
 	if err != nil {
 		log.Println(err)
@@ -128,4 +141,18 @@ func Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "new user created"})
+}
+
+func GetCurrentUser(c *gin.Context) {
+	session := sessions.Default(c)
+	userId := session.Get("user-id")
+
+	user, dbError := database.Read(fmt.Sprintf("%s", userId))
+
+	if dbError != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while fetching current user data. Please try again."})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }

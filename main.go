@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/api/handlers"
+	"fmt"
+
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/api"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/database"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/middleware"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
@@ -34,7 +36,7 @@ func main() {
 
 	flag.Parse()
 
-	utils.SetConfig(*dbUrl, *baseUrl+":"+*port)
+	utils.SetConfig(*dbUrl, fmt.Sprintf("%s:%s/", *baseUrl, *port))
 
 	router := gin.Default()
 	store := sessions.NewCookieStore([]byte("super-secret-key"))
@@ -61,9 +63,11 @@ func main() {
 	router.GET("/register", views.RegisterView)
 
 	// API
-	router.POST("/api/login", handlers.Login)
-	router.POST("/api/register", handlers.Register)
-	router.GET("/api/auth", handlers.GoogleAuth)
+	router.POST("/api/login", api.Login)
+	router.GET("/api/logout", api.Logout)
+	router.POST("/api/register", api.Register)
+	router.GET("/api/auth", api.GoogleAuth)
+	router.GET("/api/userprofile", api.GetCurrentUser)
 
 	authorized := router.Group("/secure")
 	authorized.Use(middleware.AuthorizeRequest())

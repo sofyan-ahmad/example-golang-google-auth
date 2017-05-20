@@ -1,0 +1,16 @@
+runtime: go
+api_version: go1
+
+env_variables:
+    DBPASSWORD: <%= ENV["DBPASSWORD"] %>
+    BASEURL: <%= ENV["BASEURL"] %>
+    
+handlers:
+- url: /css
+  static_dir: static/css
+
+- url: /img
+  static_dir: static/img
+
+- url: /.*
+  script: sofyan_ahmad_oauth

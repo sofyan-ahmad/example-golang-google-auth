@@ -1,15 +1,25 @@
 package main
 
 import (
+	"flag"
+
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/api/handlers"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/database"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/middleware"
-	views "bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/views"
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/views"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	dbUrl := flag.String(
+		"dbUrl",
+		"root:root@tcp(127.0.0.1:3306)/user_sso",
+		"set database url",
+	)
+
+	flag.Parse()
+
 	router := gin.Default()
 	store := sessions.NewCookieStore([]byte("super-secret-key"))
 
@@ -18,7 +28,7 @@ func main() {
 		MaxAge: 86400 * 7,
 	})
 
-	database.New("root:root@tcp(127.0.0.1:3306)/cyza")
+	database.New(*dbUrl)
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())

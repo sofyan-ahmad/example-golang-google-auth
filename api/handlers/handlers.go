@@ -9,6 +9,8 @@ import (
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/database"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/services"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/structs"
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 )
@@ -41,16 +43,26 @@ func Login(c *gin.Context) {
 }
 
 func GoogleAuth(c *gin.Context) {
+	session := sessions.Default(c)
+	retrievedState := session.Get("state")
+	queryState := c.Request.URL.Query().Get("state")
+
+	if retrievedState != queryState {
+		log.Printf("Invalid session state: retrieved: %s; Param: %s", retrievedState, queryState)
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid session state."})
+		return
+	}
+
 	// Handle the exchange code to initiate a transport.
 	code := c.Request.URL.Query().Get("code")
-	tok, err := services.Conf.Exchange(oauth2.NoContext, code)
+	tok, err := utils.Conf.Exchange(oauth2.NoContext, code)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Login failed. Please try again."})
 		return
 	}
 
-	client := services.Conf.Client(oauth2.NoContext, tok)
+	client := utils.Conf.Client(oauth2.NoContext, tok)
 	userinfo, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
 		log.Println(err)

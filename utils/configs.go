@@ -1,4 +1,4 @@
-package services
+package utils
 
 import (
 	"encoding/json"
@@ -6,36 +6,37 @@ import (
 	"log"
 	"os"
 
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/structs"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
 
 var (
-	Cred Credentials
-	Conf *oauth2.Config
+	DBUrl   string
+	BaseUrl string
+	Cred    structs.OAuthCredentials
+	Conf    *oauth2.Config
 )
 
-func init() {
+func SetConfig(dbUrl string, baseUrl string) {
 	file, err := ioutil.ReadFile("./creds.json")
+
 	if err != nil {
 		log.Printf("File error: %v\n", err)
 		os.Exit(1)
 	}
 	json.Unmarshal(file, &Cred)
 
+	DBUrl = dbUrl
+	BaseUrl = baseUrl
+
 	Conf = &oauth2.Config{
 		ClientID:     Cred.Cid,
 		ClientSecret: Cred.Csecret,
-		RedirectURL:  "http://127.0.0.1:9090/api/auth",
+		RedirectURL:  BaseUrl + "/api/auth",
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email", // You have to select your own scope from here -> https://developers.google.com/identity/protocols/googlescopes#google_sign-in
 		},
 		Endpoint: google.Endpoint,
 	}
-}
-
-// Credentials which stores google ids.
-type Credentials struct {
-	Cid     string `json:"cid"`
-	Csecret string `json:"csecret"`
 }

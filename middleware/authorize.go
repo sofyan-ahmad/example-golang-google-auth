@@ -16,7 +16,7 @@ func AuthorizeRequest() gin.HandlerFunc {
 		log.Println(v)
 
 		if v == nil {
-			c.HTML(http.StatusUnauthorized, "error.tmpl", gin.H{"message": "Please login."})
+			c.HTML(http.StatusUnauthorized, "error", gin.H{"message": "Please login."})
 			c.Abort()
 		}
 

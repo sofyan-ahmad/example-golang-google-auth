@@ -238,6 +238,10 @@ func UpdateCurrentUser(c *gin.Context) {
 	var json structs.User
 	c.Bind(&json)
 
+	if len(json.Email) > 0 {
+		user.Email = json.Email
+	}
+
 	user.GivenName = json.GivenName
 	user.FamilyName = json.FamilyName
 	user.Address = json.Address

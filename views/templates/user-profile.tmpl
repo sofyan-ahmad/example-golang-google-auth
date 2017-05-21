@@ -3,65 +3,137 @@
 <div class="container">
     <div class="container-content">
         <div>
-            <button class="float-right btn btn-success">
-                <i class="fa fa-edit"></i> Edit User
-            </button>
+            <button type="submit" form="formUserProfile" id="btnSaveProfile" class="float-right btn btn-primary"><i class="fa fa-save"></i> Save</button>
+            <button id="btnEditProfile" class="float-right btn btn-success"><i class="fa fa-edit"></i> Edit User</button>
             <h4>User Profile</h4>
         </div>
         <hr/>
 
-        <div class="form-group row">
-            <label class="col-md-3">Picture</label>
-            <div class="col-md-9">
-                <img id="picture" src="" width="100">
-                <button class="btn btn-sm btn-primary">Change Picture</button>
-            </div>
-        </div>
+        <form id="formUserProfile" name="formUserProfile">
+            <fieldset class="fieldset">
+                <div class="form-group row">
+                    <label class="col-md-3">Picture</label>
+                    <div class="col-md-9">
+                        <img id="picture" src="" width="100">
+                        <button class="btn btn-sm btn-primary">Change Picture</button>
+                    </div>
+                </div>
 
-        <div class="form-group row">
-            <label class="col-md-3">Email</label>
-            <div class="col-md-9">
-                <input id="inputEmail" class="form-control"></input>
-            </div>
-        </div>
+                <div class="form-group row">
+                    <label class="col-md-3">Email</label>
+                    <div class="col-md-9">
+                        <input id="inputEmail" class="form-control"></input>
+                    </div>
+                </div>
 
-        <div class="form-group row">
-            <label class="col-md-3">Given Name</label>
-            <div class="col-md-9">
-                <input id="inputGivenName" class="form-control"></input>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-md-3">Family Name</label>
-            <div class="col-md-9">
-                <input id="inputFamilyName" class="form-control"></input>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-md-3">Address</label>
-            <div class="col-md-9">
-                <input id="inputAddress" class="form-control"></input>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-md-3">Phone</label>
-            <div class="col-md-9">
-                <input id="inputPhone" class="form-control"></input>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-md-3">Gender</label>
-            <div class="col-md-9">
-                <input id="inputGenderMale" type="radio" name="gender" value="male"> Male<br>
-                <input id="inputGenderFemale " type="radio" name="gender" value="female"> Female<br>
-            </div>
-        </div>
+                <div class="form-group row">
+                    <label class="col-md-3">Given Name</label>
+                    <div class="col-md-9">
+                        <input id="inputGivenName" class="form-control"></input>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">Family Name</label>
+                    <div class="col-md-9">
+                        <input id="inputFamilyName" class="form-control"></input>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">Address</label>
+                    <div class="col-md-9">
+                        <input id="inputAddress" class="form-control"></input>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">Phone</label>
+                    <div class="col-md-9">
+                        <input id="inputTelephone" class="form-control"></input>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">Gender</label>
+                    <div class="col-md-9">
+                        <input id="inputGenderMale" type="radio" name="gender" value="male"> Male<br>
+                        <input id="inputGenderFemale " type="radio" name="gender" value="female"> Female<br>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
     </div>
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDruo62J1yKvOGom5pn_R9JMcvSW1nTSko&libraries=places&callback=initMap" async defer></script>
 
 <script>
+    $("#formUserProfile").submit(function(event) {
+        event.preventDefault();
+
+        var url = base_url + "api/user/current"
+
+        $.ajax({
+            type: "PUT",
+            url: url,
+            data: JSON.stringify({
+                email: $('#inputEmail').val(),
+                givenName: $('#inputGivenName').val(),
+                familyName: $('#inputFamilyName').val(),
+                phone: $('#inputTelephone').val(),
+                address: $('#inputAddress').val(),
+                gender: $("input[name='gender']:checked").val(),
+            }),
+            success: function() {
+                alert('user updated successfully');
+            },
+            error: (function(error) {
+                alert(error.responseText);
+            }),
+            dataType: "json",
+            contentType: "application/json"
+        });
+    });
+
+    function initMap() {
+        autocomplete = new google.maps.places.Autocomplete(
+            /** @type {!HTMLInputElement} */
+            (document.getElementById('inputAddress')), {
+                types: ['geocode']
+            });
+    }
+
+    function geolocate() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                var circle = new google.maps.Circle({
+                    center: geolocation,
+                    radius: position.coords.accuracy
+                });
+                autocomplete.setBounds(circle.getBounds());
+            });
+        }
+    }
     $(document).ready(function() {
+        var toggleEdit = function(isEdit) {
+            if (!isEdit) {
+                $("#formUserProfile .fieldset").prop("disabled", true);
+                $("#btnEditProfile").show();
+                $("#btnSaveProfile").hide();
+            } else {
+                $("#formUserProfile .fieldset").prop("disabled", false);
+                $("#btnEditProfile").hide();
+                $("#btnSaveProfile").show();
+            }
+        }
+
+        toggleEdit(false)
+
+        $("#btnEditProfile").click(function() {
+            toggleEdit(true);
+        })
+
         var getCurrentUserProfile = function() {
             var url = base_url + "api/userprofile/"
 
@@ -74,7 +146,7 @@
                     $("#inputGivenName").val(user.givenName)
                     $("#inputGender").val(user.gender)
                     $("#inputAddress").val(user.address)
-                    $("#inputPhone").val(user.phone)
+                    $("#inputTelephone").val(user.phone)
 
                     if (user.picture.length > 0)
                         $('#picture').attr('src', user.picture);

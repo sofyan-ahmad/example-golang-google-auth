@@ -88,7 +88,7 @@ func Read(email string) (*structs.User, error) {
 
 func Create(user *structs.User) (sql.Result, error) {
 	if _, err := Read(user.Email); err == nil {
-		return nil, fmt.Errorf("User already exists!")
+		return nil, fmt.Errorf("User already exists! ")
 	}
 
 	user.Id = uuid.NewV4().String()

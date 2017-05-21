@@ -16,8 +16,9 @@ func SendResetTokenEmail(to string, token string) error {
 	msg := "From: " + from + "\n" +
 		"To: " + to + "\n" +
 		"Subject: Reset Token\n\n" +
-		"You requested to reset yoour password, ignore if you never \n" +
-		"to reset your password follow this link: " + utils.BaseUrl + "user/changepassword/do?email=" + to + "&t=" + token
+		"You requested to reset your password. \n" +
+		"If you did not request a change of password, please ignore this e-mail.\n\n" +
+		"To reset your password follow this link: \n" + utils.BaseUrl + "user/changepassword/do?email=" + to + "&t=" + token
 
 	err := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),

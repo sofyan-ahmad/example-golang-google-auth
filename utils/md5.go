@@ -9,7 +9,7 @@ import (
 func HashPassword(source string) string {
 	h := md5.New()
 	io.WriteString(h, source)
-	result := fmt.Sprintf("%x", md5.Sum(nil))
+	result := fmt.Sprintf("%x", h.Sum(nil))
 
 	return result
 }

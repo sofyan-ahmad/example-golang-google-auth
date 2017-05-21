@@ -60,8 +60,9 @@ func New(url string) {
 // Login check email and password correct
 func Login(loginData structs.LoginCredential) (*structs.User, error) {
 	user := &structs.User{}
+	hashedPass := utils.HashPassword(loginData.Password)
 
-	row, err := dot.QueryRow(db, selectLoginQuery, loginData.Email, utils.HashPassword(loginData.Password))
+	row, err := dot.QueryRow(db, selectLoginQuery, loginData.Email, hashedPass)
 
 	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Address, &user.Phone); err != nil {
 		if err == sql.ErrNoRows {
@@ -100,6 +101,7 @@ func Create(user *structs.User) (sql.Result, error) {
 
 	user.Id = uuid.NewV4().String()
 	password := utils.HashPassword(user.Password)
+
 	result, err := dot.Exec(db, insertQuery,
 		user.Id, user.Sub, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, password, user.EmailVerified, user.Gender, user.Address, user.Phone)
 

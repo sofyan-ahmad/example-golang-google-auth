@@ -12,10 +12,11 @@ import (
 )
 
 var (
-	DBUrl   string
-	BaseUrl string
-	Cred    structs.OAuthCredentials
-	Conf    *oauth2.Config
+	DBUrl        string
+	BaseUrl      string
+	Cred         structs.OAuthCredentials
+	ConfLogin    *oauth2.Config
+	ConfRegister *oauth2.Config
 )
 
 func SetConfig(dbUrl string, baseUrl string) {
@@ -25,15 +26,33 @@ func SetConfig(dbUrl string, baseUrl string) {
 		log.Printf("File error: %v\n", err)
 		os.Exit(1)
 	}
+
 	json.Unmarshal(file, &Cred)
 
 	DBUrl = dbUrl
 	BaseUrl = baseUrl
 
-	Conf = &oauth2.Config{
+	ConfLogin = generateLoginConf()
+	ConfRegister = generateRegisterConf()
+}
+
+func generateLoginConf() *oauth2.Config {
+	return &oauth2.Config{
 		ClientID:     Cred.Cid,
 		ClientSecret: Cred.Csecret,
-		RedirectURL:  BaseUrl + "api/auth",
+		RedirectURL:  BaseUrl + "api/googleLogin",
+		Scopes: []string{
+			"https://www.googleapis.com/auth/userinfo.email", // You have to select your own scope from here -> https://developers.google.com/identity/protocols/googlescopes#google_sign-in
+		},
+		Endpoint: google.Endpoint,
+	}
+}
+
+func generateRegisterConf() *oauth2.Config {
+	return &oauth2.Config{
+		ClientID:     Cred.Cid,
+		ClientSecret: Cred.Csecret,
+		RedirectURL:  BaseUrl + "api/googleRegister",
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email", // You have to select your own scope from here -> https://developers.google.com/identity/protocols/googlescopes#google_sign-in
 		},

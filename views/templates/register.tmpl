@@ -1,4 +1,4 @@
-{{template "header.tmpl"}}
+{{template "header.tmpl" .}}
 
 <div class="container">
     <form class="form-signin" id="formRegister">
@@ -9,16 +9,6 @@
         <div class="form-group">
             <label for="inputEmail" class="sr-only">Email address</label>
             <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-        </div>
-
-        <div class="form-group">
-            <label for="inputGivenName" class="sr-only">Email address</label>
-            <input type="text" id="inputGivenName" class="form-control" placeholder="Given Name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="inputFamilyName" class="sr-only">Email address</label>
-            <input type="text" id="inputFamilyName" class="form-control" placeholder="Family Name" required>
         </div>
 
         <div class="form-group">
@@ -33,7 +23,9 @@
 
         <button class="btn btn-primary btn-block" type="submit">Register</button>
         <hr/>
-        <a href="/" class="btn btn-danger btn-block">Cancel</a>
+        <a class="btn btn-danger btn-block" href="{{ .link }}"> <i class="fa fa-google"></i> Sign Up with Google!</a>
+        <hr/>
+        <a href="{{ .baseUrl}}login" class="btn btn-default btn-block">Cancel</a>
 
     </form>
 </div>
@@ -48,29 +40,17 @@
                 return;
             }
 
-            /* get the action attribute from the <form action=""> element */
             var url = base_url + "api/register"
-
-            /* Send the data using post with element id name and name2*/
-            var posting = $.post(url, {
-                email: $('#inputEmail').val(),
-                givenName: $('#inputGivenName').val(),
-                familyName: $('#inputFamilyName').val(),
-                password: $('#inputPassword').val(),
-            });
 
             $.ajax({
                 type: "POST",
                 url: url,
                 data: JSON.stringify({
                     email: $('#inputEmail').val(),
-                    given_name: $('#inputGivenName').val(),
-                    family_name: $('#inputFamilyName').val(),
                     password: $('#inputPassword').val(),
                 }),
                 success: function() {
-                    alert('user created successfully');
-                    window.location.replace(base_url + "login/");
+                    window.location.replace(base_url + "register/detail");
                 },
                 error: (function(error) {
                     alert(error.responseText);

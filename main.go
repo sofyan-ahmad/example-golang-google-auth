@@ -61,13 +61,16 @@ func main() {
 	router.GET("/", views.IndexView)
 	router.GET("/login", views.LoginView)
 	router.GET("/register", views.RegisterView)
+	router.GET("/register/detail", views.RegisterDetailView)
 
 	// API
 	router.POST("/api/login", api.Login)
 	router.GET("/api/logout", api.Logout)
 	router.POST("/api/register", api.Register)
-	router.GET("/api/auth", api.GoogleAuth)
+	router.GET("/api/googleLogin", api.GoogleAuthLogin)
+	router.GET("/api/googleRegister", api.GoogleAuthRegister)
 	router.GET("/api/userprofile", api.GetCurrentUser)
+	router.PUT("api/user/current", api.UpdateCurrentUser)
 
 	authorized := router.Group("/secure")
 	authorized.Use(middleware.AuthorizeRequest())
@@ -75,15 +78,11 @@ func main() {
 		authorized.GET("/", views.UserProfileView)
 	}
 
-	router.Run("0.0.0.0:" + *port)
+	router.Run("0.0.0.0:9090")
 }
 
 func createMyRender() multitemplate.Render {
 	templates := multitemplate.New()
-	templates.AddFromFiles("index",
-		"./views/templates/index.tmpl",
-		"./views/templates/header.tmpl",
-		"./views/templates/footer.tmpl")
 
 	templates.AddFromFiles("login",
 		"./views/templates/login.tmpl",
@@ -92,6 +91,11 @@ func createMyRender() multitemplate.Render {
 
 	templates.AddFromFiles("register",
 		"./views/templates/register.tmpl",
+		"./views/templates/header.tmpl",
+		"./views/templates/footer.tmpl")
+
+	templates.AddFromFiles("registerDetail",
+		"./views/templates/register-detail.tmpl",
 		"./views/templates/header.tmpl",
 		"./views/templates/footer.tmpl")
 

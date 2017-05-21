@@ -38,6 +38,18 @@
             </div>
         </div>
         <div class="form-group row">
+            <label class="col-md-3">Address</label>
+            <div class="col-md-9">
+                <input id="inputAddress" class="form-control"></input>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-md-3">Phone</label>
+            <div class="col-md-9">
+                <input id="inputPhone" class="form-control"></input>
+            </div>
+        </div>
+        <div class="form-group row">
             <label class="col-md-3">Gender</label>
             <div class="col-md-9">
                 <input id="inputGenderMale" type="radio" name="gender" value="male"> Male<br>
@@ -58,9 +70,11 @@
                 url: url,
                 success: function(user) {
                     $("#inputEmail").val(user.email)
-                    $("#inputFamilyName").val(user.family_name)
-                    $("#inputGivenName").val(user.given_name)
+                    $("#inputFamilyName").val(user.familyName)
+                    $("#inputGivenName").val(user.givenName)
                     $("#inputGender").val(user.gender)
+                    $("#inputAddress").val(user.address)
+                    $("#inputPhone").val(user.phone)
 
                     if (user.picture.length > 0)
                         $('#picture').attr('src', user.picture);

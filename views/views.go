@@ -9,7 +9,11 @@ import (
 )
 
 func getLoginURL(state string) string {
-	return utils.Conf.AuthCodeURL(state)
+	return utils.ConfLogin.AuthCodeURL(state)
+}
+
+func getRegisterURL(state string) string {
+	return utils.ConfRegister.AuthCodeURL(state)
 }
 
 // IndexHandler handels /.
@@ -33,17 +37,34 @@ func LoginView(c *gin.Context) {
 	session.Save()
 
 	link := getLoginURL(state)
-	registerPath := utils.BaseUrl + "register"
-	c.HTML(http.StatusOK, "login", gin.H{"baseUrl": utils.BaseUrl, "link": link, "registerPath": registerPath})
+	c.HTML(http.StatusOK, "login", gin.H{"baseUrl": utils.BaseUrl, "link": link})
 }
 
 func RegisterView(c *gin.Context) {
 	state := utils.RandToken(32)
-	link := getLoginURL(state)
+	session := sessions.Default(c)
+	session.Set("state", state)
+	session.Save()
+
+	link := getRegisterURL(state)
 	c.HTML(http.StatusOK, "register", gin.H{"baseUrl": utils.BaseUrl, "link": link})
 }
 
-// FieldView is a rudementary View for logged in users.
+func RegisterDetailView(c *gin.Context) {
+	state := utils.RandToken(32)
+	link := getLoginURL(state)
+	session := sessions.Default(c)
+	userId := session.Get("user-id")
+
+	if userId == nil || userId == "" {
+		c.HTML(http.StatusBadRequest, "error", gin.H{"message": "Invalid register session. Please try again."})
+		return
+	}
+
+	c.HTML(http.StatusOK, "registerDetail", gin.H{"baseUrl": utils.BaseUrl, "link": link})
+}
+
+// FieldView is a View for logged in users.
 func UserProfileView(c *gin.Context) {
 	session := sessions.Default(c)
 	userId := session.Get("user-id")

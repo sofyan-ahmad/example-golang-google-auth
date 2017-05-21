@@ -1,11 +1,16 @@
 -- name: select-login
-SELECT id, sub, username, givenName, familyName, users.profile, picture, email, emailVerified, gender 
+SELECT id, sub, givenName, familyName, profile, picture, email, emailVerified, gender, address, phone
     FROM users WHERE email = ? AND password = ? ;
 
 -- name: select-email
-SELECT id, sub, username, givenName, familyName, users.profile, picture, email, emailVerified, gender 
+SELECT id, sub, givenName, familyName, profile, picture, email, emailVerified, gender, address, phone
     FROM users WHERE email = ?;
 
 -- name: insert
-INSERT INTO users (id, sub, username, givenName, familyName, users.profile, picture, email, password, emailVerified, gender) 
-	values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO users (id, sub, givenName, familyName, profile, picture, email, password, emailVerified, gender) 
+	values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- name: update
+UPDATE users
+    SET sub=?, givenName=?, familyName=?, profile=?, picture=?, email=?, emailVerified=?, gender=?, address=?, phone=?
+    WHERE id=? 

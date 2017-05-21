@@ -25,6 +25,7 @@ const (
 	insertQuery      = "insert"
 	selectLoginQuery = "select-login"
 	selectEmailQuery = "select-email"
+	updateQuery      = "update"
 )
 
 func New(url string) {
@@ -57,7 +58,7 @@ func Login(loginData structs.LoginCredential) (*structs.User, error) {
 
 	row, err := dot.QueryRow(db, selectLoginQuery, loginData.Email, utils.HashPassword(loginData.Password))
 
-	if err := row.Scan(&user.Id, &user.Sub, &user.Name, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender); err != nil {
+	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Phone, &user.Address); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.NotFound(loginData.Email, err.Error())
 		}
@@ -74,7 +75,7 @@ func Read(email string) (*structs.User, error) {
 	row, err := dot.QueryRow(db, selectEmailQuery, email)
 
 	// Scan => take data
-	if err := row.Scan(&user.Id, &user.Sub, &user.Name, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender); err != nil {
+	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Phone, &user.Address); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.NotFound(email, err.Error())
 		}
@@ -92,7 +93,19 @@ func Create(user *structs.User) (sql.Result, error) {
 
 	user.Id = uuid.NewV4().String()
 	password := utils.HashPassword(user.Password)
-	result, err := dot.Exec(db, insertQuery, user.Id, user.Sub, user.Name, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, password, user.EmailVerified, user.Gender)
+	result, err := dot.Exec(db, insertQuery,
+		user.Id, user.Sub, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, password, user.EmailVerified, user.Gender)
+
+	if err != nil {
+		return nil, errors.InternalServerError("", err.Error())
+	}
+
+	return result, err
+}
+
+func Update(user *structs.User) (sql.Result, error) {
+	result, err := dot.Exec(db, updateQuery,
+		user.Sub, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, user.EmailVerified, user.Gender, user.Address, user.Phone, user.Id)
 
 	if err != nil {
 		return nil, errors.InternalServerError("", err.Error())

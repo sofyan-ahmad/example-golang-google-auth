@@ -1,8 +1,10 @@
 package views
 
 import (
+	"log"
 	"net/http"
 
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/database"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/services"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
 	"github.com/gin-contrib/sessions"
@@ -80,6 +82,29 @@ func ResetPasswordView(c *gin.Context) {
 }
 
 func ChangePasswordView(c *gin.Context) {
+	email := c.Request.URL.Query().Get("email")
+	token := c.Request.URL.Query().Get("t")
+
+	user, dbError := database.Read(email)
+	if dbError != nil {
+		log.Println(dbError)
+		c.HTML(http.StatusBadRequest, "error", gin.H{"message": "Error while fetching current user data. Please try again."})
+		return
+	}
+
+	dbError = database.CheckResetToken(user, token)
+	if dbError != nil {
+		log.Println(dbError)
+		c.HTML(http.StatusBadRequest, "error", gin.H{"message": "Invalid token."})
+		return
+	}
+
 	services.ClearSession(c)
-	c.HTML(http.StatusOK, "changePassword", gin.H{"baseUrl": utils.BaseUrl})
+
+	session := sessions.Default(c)
+	session.Set("reset-token", token)
+	session.Set("reset-email", email)
+	session.Save()
+
+	c.HTML(http.StatusOK, "changePassword", gin.H{"baseUrl": utils.BaseUrl, "token": token, "email": email})
 }

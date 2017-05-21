@@ -75,7 +75,7 @@ func main() {
 	router.PUT("/api/user/current", api.UpdateCurrentUser)
 	router.GET("/api/user/resetPassword", api.GenerateResetToken)
 	router.GET("/api/user/validateResetToken", api.ValidateResetToken)
-	router.GET("/api/user/changePassword", api.ChangePassword)
+	router.POST("/api/user/changePassword", api.ChangePassword)
 
 	authorized := router.Group("/secure")
 	authorized.Use(middleware.AuthorizeRequest())

@@ -315,25 +315,42 @@ func ValidateResetToken(c *gin.Context) {
 }
 
 func ChangePassword(c *gin.Context) {
+	session := sessions.Default(c)
+	email := session.Get("reset-email")
+
 	var json structs.LoginCredential
+
 	c.Bind(&json)
 
-	user, dbError := database.Read(json.Email)
+	if json.Email != fmt.Sprintf("%s", email) {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid Session."})
+		return
+	}
+
+	token := c.Request.URL.Query().Get("t")
+	sessionToken := session.Get("reset-token")
+	if token != fmt.Sprintf("%s", sessionToken) {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid Token."})
+		return
+	}
+
+	user, dbError := database.Read(fmt.Sprintf("%s", email))
 	if dbError != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Error while fetching current user data. Please try again."})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Error while fetching current user data. Please try again."})
 		return
 	}
 
 	dbError = database.ChangePassword(user, json.Password)
 	if dbError != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid email or password"})
+		log.Println(dbError)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while changing user password. Please try again."})
 		return
 	}
 
 	err := services.ClearSession(c)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Error while clearing session. Please try again."})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while clearing session. Please try again."})
 		return
 	}
 

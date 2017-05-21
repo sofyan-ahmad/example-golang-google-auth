@@ -26,4 +26,4 @@ UPDATE users
 
 -- name: update-password
 UPDATE users 
-    SET password = ? WHERE id=? 
+    SET password = ?, reset_token = "" WHERE id=? 

@@ -65,33 +65,6 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDruo62J1yKvOGom5pn_R9JMcvSW1nTSko&libraries=places&callback=initMap" async defer></script>
 
 <script>
-    $("#formUserProfile").submit(function(event) {
-        event.preventDefault();
-
-        var url = base_url + "api/user/current"
-
-        $.ajax({
-            type: "PUT",
-            url: url,
-            data: JSON.stringify({
-                email: $('#inputEmail').val(),
-                givenName: $('#inputGivenName').val(),
-                familyName: $('#inputFamilyName').val(),
-                phone: $('#inputTelephone').val(),
-                address: $('#inputAddress').val(),
-                gender: $("input[name='gender']:checked").val(),
-            }),
-            success: function() {
-                alert('user updated successfully');
-            },
-            error: (function(error) {
-                alert(error.responseText);
-            }),
-            dataType: "json",
-            contentType: "application/json"
-        });
-    });
-
     function initMap() {
         autocomplete = new google.maps.places.Autocomplete(
             /** @type {!HTMLInputElement} */
@@ -133,6 +106,34 @@
         $("#btnEditProfile").click(function() {
             toggleEdit(true);
         })
+
+        $("#formUserProfile").submit(function(event) {
+            event.preventDefault();
+
+            var url = base_url + "api/user/current"
+
+            $.ajax({
+                type: "PUT",
+                url: url,
+                data: JSON.stringify({
+                    email: $('#inputEmail').val(),
+                    givenName: $('#inputGivenName').val(),
+                    familyName: $('#inputFamilyName').val(),
+                    phone: $('#inputTelephone').val(),
+                    address: $('#inputAddress').val(),
+                    gender: $("input[name='gender']:checked").val(),
+                }),
+                success: function() {
+                    alert('user updated successfully');
+                    toggleEdit(false);
+                },
+                error: (function(error) {
+                    alert(error.responseText);
+                }),
+                dataType: "json",
+                contentType: "application/json"
+            });
+        });
 
         var getCurrentUserProfile = function() {
             var url = base_url + "api/userprofile/"

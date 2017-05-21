@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/smtp"
+	"os"
 
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
 )
 
 func SendResetTokenEmail(to string, token string) error {
 	from := "sofyan.h.ahmad@gmail.com"
-	pass := "rr.hountari.ph"
+	pass := os.Getenv("EMAILPASSWORD")
 
 	msg := "From: " + from + "\n" +
 		"To: " + to + "\n" +

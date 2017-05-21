@@ -28,6 +28,7 @@ func Login(c *gin.Context) {
 	user, dbError := database.Login(loginData)
 
 	if dbError != nil {
+		log.Println(dbError)
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid email or password"})
 		return
 	}

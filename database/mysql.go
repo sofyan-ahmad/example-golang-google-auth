@@ -153,9 +153,8 @@ func CheckResetToken(user *structs.User, token string) error {
 
 // ChangePassword create md5 of the password and update into DB
 func ChangePassword(user *structs.User, password string) error {
-	user.Id = uuid.NewV4().String()
-	password = utils.HashPassword(password)
-	_, err := dot.Exec(db, updatePasswordQuery, password, user.Id)
+	hashedPassword := utils.HashPassword(password)
+	_, err := dot.Exec(db, updatePasswordQuery, hashedPassword, user.Id)
 
 	if err != nil {
 		return errors.InternalServerError("", err.Error())

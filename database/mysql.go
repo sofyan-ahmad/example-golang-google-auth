@@ -21,13 +21,17 @@ var (
 )
 
 const (
-	userDBSchema     = "./database/schema.sql"
-	insertQuery      = "insert"
-	selectLoginQuery = "select-login"
-	selectEmailQuery = "select-email"
-	updateQuery      = "update"
+	userDBSchema          = "./database/schema.sql"
+	insertQuery           = "insert"
+	selectLoginQuery      = "select-login"
+	selectEmailQuery      = "select-email"
+	updateQuery           = "update"
+	updateResetTokenQuery = "update-reset-token"
+	selectResetTokenQuery = "select-reset-token"
+	updatePasswordQuery   = "update-password"
 )
 
+// New Create New Database Instance
 func New(url string) {
 	url = url
 	var d *sql.DB
@@ -53,6 +57,7 @@ func New(url string) {
 	db = d
 }
 
+// Login check email and password correct
 func Login(loginData structs.LoginCredential) (*structs.User, error) {
 	user := &structs.User{}
 
@@ -69,6 +74,7 @@ func Login(loginData structs.LoginCredential) (*structs.User, error) {
 	return user, err
 }
 
+// Read an user by email
 func Read(email string) (*structs.User, error) {
 	user := &structs.User{}
 
@@ -86,6 +92,7 @@ func Read(email string) (*structs.User, error) {
 	return user, err
 }
 
+// Create new user
 func Create(user *structs.User) (sql.Result, error) {
 	if _, err := Read(user.Email); err == nil {
 		return nil, fmt.Errorf("User already exists! ")
@@ -103,6 +110,7 @@ func Create(user *structs.User) (sql.Result, error) {
 	return result, err
 }
 
+// Update user data
 func Update(user *structs.User) (sql.Result, error) {
 	result, err := dot.Exec(db, updateQuery,
 		user.Sub, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, user.EmailVerified, user.Gender, user.Address, user.Phone, user.Id)
@@ -112,4 +120,44 @@ func Update(user *structs.User) (sql.Result, error) {
 	}
 
 	return result, err
+}
+
+// GenerateResetToken Generate reset token and update into User DB
+func GenerateResetToken(user *structs.User, token string) (sql.Result, error) {
+	result, err := dot.Exec(db, updateResetTokenQuery, token, user.Id)
+
+	if err != nil {
+		return nil, errors.InternalServerError("", err.Error())
+	}
+
+	return result, err
+}
+
+// CheckResetToken Check reset token exist in DB
+func CheckResetToken(user *structs.User, token string) error {
+	row, err := dot.QueryRow(db, selectResetTokenQuery, user.Email, token)
+
+	// Scan => take data
+	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Address, &user.Phone); err != nil {
+		if err == sql.ErrNoRows {
+			return errors.NotFound(token, err.Error())
+		}
+
+		return errors.InternalServerError(token, err.Error())
+	}
+
+	return err
+}
+
+// ChangePassword create md5 of the password and update into DB
+func ChangePassword(user *structs.User, password string) error {
+	user.Id = uuid.NewV4().String()
+	password = utils.HashPassword(password)
+	_, err := dot.Exec(db, updatePasswordQuery, password, user.Id)
+
+	if err != nil {
+		return errors.InternalServerError("", err.Error())
+	}
+
+	return err
 }

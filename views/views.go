@@ -3,6 +3,7 @@ package views
 import (
 	"net/http"
 
+	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/services"
 	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -64,11 +65,21 @@ func RegisterDetailView(c *gin.Context) {
 	c.HTML(http.StatusOK, "registerDetail", gin.H{"baseUrl": utils.BaseUrl, "link": link})
 }
 
-// FieldView is a View for logged in users.
+// UserProfileView is a View for logged in users.
 func UserProfileView(c *gin.Context) {
 	session := sessions.Default(c)
 	userId := session.Get("user-id")
 	userName := session.Get("user-name")
 
 	c.HTML(http.StatusOK, "userProfile", gin.H{"baseUrl": utils.BaseUrl, "userId": userId, "userName": userName})
+}
+
+func ResetPasswordView(c *gin.Context) {
+	services.ClearSession(c)
+	c.HTML(http.StatusOK, "resetPassword", gin.H{"baseUrl": utils.BaseUrl})
+}
+
+func ChangePasswordView(c *gin.Context) {
+	services.ClearSession(c)
+	c.HTML(http.StatusOK, "changePassword", gin.H{"baseUrl": utils.BaseUrl})
 }

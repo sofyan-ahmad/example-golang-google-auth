@@ -62,6 +62,8 @@ func main() {
 	router.GET("/login", views.LoginView)
 	router.GET("/register", views.RegisterView)
 	router.GET("/register/detail", views.RegisterDetailView)
+	router.GET("/user/resetpassword", views.ResetPasswordView)
+	router.GET("/user/changepassword/do", views.ChangePasswordView)
 
 	// API
 	router.POST("/api/login", api.Login)
@@ -69,8 +71,11 @@ func main() {
 	router.POST("/api/register", api.Register)
 	router.GET("/api/googleLogin", api.GoogleAuthLogin)
 	router.GET("/api/googleRegister", api.GoogleAuthRegister)
-	router.GET("/api/userprofile", api.GetCurrentUser)
-	router.PUT("api/user/current", api.UpdateCurrentUser)
+	router.GET("/api/userProfile", api.GetCurrentUser)
+	router.PUT("/api/user/current", api.UpdateCurrentUser)
+	router.GET("/api/user/resetPassword", api.GenerateResetToken)
+	router.GET("/api/user/validateResetToken", api.ValidateResetToken)
+	router.GET("/api/user/changePassword", api.ChangePassword)
 
 	authorized := router.Group("/secure")
 	authorized.Use(middleware.AuthorizeRequest())
@@ -101,6 +106,16 @@ func createMyRender() multitemplate.Render {
 
 	templates.AddFromFiles("userProfile",
 		"./views/templates/user-profile.tmpl",
+		"./views/templates/header.tmpl",
+		"./views/templates/footer.tmpl")
+
+	templates.AddFromFiles("resetPassword",
+		"./views/templates/reset-password.tmpl",
+		"./views/templates/header.tmpl",
+		"./views/templates/footer.tmpl")
+
+	templates.AddFromFiles("changePassword",
+		"./views/templates/reset-password-change.tmpl",
 		"./views/templates/header.tmpl",
 		"./views/templates/footer.tmpl")
 

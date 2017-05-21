@@ -258,3 +258,84 @@ func UpdateCurrentUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func GenerateResetToken(c *gin.Context) {
+	email := c.Request.URL.Query().Get("email")
+
+	user, dbError := database.Read(email)
+
+	if dbError != nil {
+		log.Println(dbError)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while fetching current user data. Please try again."})
+		return
+	}
+
+	token := utils.RandToken(25)
+	_, dbError = database.GenerateResetToken(user, token)
+	if dbError != nil {
+		log.Println(dbError)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while creating reset token. Please try again."})
+		return
+	}
+
+	err := services.SendResetTokenEmail(email, token)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while sending reset token. Please try again."})
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}
+
+func ValidateResetToken(c *gin.Context) {
+	email := c.Request.URL.Query().Get("email")
+	token := c.Request.URL.Query().Get("t")
+
+	user, dbError := database.Read(email)
+
+	if dbError != nil {
+		log.Println(dbError)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while fetching current user data. Please try again."})
+		return
+	}
+
+	dbError = database.CheckResetToken(user, token)
+
+	if dbError != nil {
+		log.Println(dbError)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Invalid token."})
+		return
+	}
+
+	session := sessions.Default(c)
+	session.Set("resetToken", token)
+
+	c.JSON(http.StatusOK, nil)
+}
+
+func ChangePassword(c *gin.Context) {
+	var json structs.LoginCredential
+	c.Bind(&json)
+
+	user, dbError := database.Read(json.Email)
+	if dbError != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Error while fetching current user data. Please try again."})
+		return
+	}
+
+	dbError = database.ChangePassword(user, json.Password)
+	if dbError != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid email or password"})
+		return
+	}
+
+	err := services.ClearSession(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Error while clearing session. Please try again."})
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}

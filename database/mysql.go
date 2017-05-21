@@ -58,7 +58,7 @@ func Login(loginData structs.LoginCredential) (*structs.User, error) {
 
 	row, err := dot.QueryRow(db, selectLoginQuery, loginData.Email, utils.HashPassword(loginData.Password))
 
-	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Phone, &user.Address); err != nil {
+	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Address, &user.Phone); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.NotFound(loginData.Email, err.Error())
 		}

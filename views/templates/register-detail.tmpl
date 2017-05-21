@@ -55,7 +55,7 @@
                     familyName: $('#inputFamilyName').val(),
                     phone: $('#inputTelephone').val(),
                     address: $('#inputAddress').val(),
-                    gender: $("#inputGender").val()
+                    gender:  $("input[name='gender']:checked").val(),
                 }),
                 success: function() {
                     alert('user created successfully');

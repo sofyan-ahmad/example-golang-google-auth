@@ -7,8 +7,8 @@ SELECT id, sub, givenName, familyName, profile, picture, email, emailVerified, g
     FROM users WHERE email = ?;
 
 -- name: insert
-INSERT INTO users (id, sub, givenName, familyName, profile, picture, email, password, emailVerified, gender) 
-	values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO users (id, sub, givenName, familyName, profile, picture, email, password, emailVerified, gender, address, phone) 
+	values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- name: update
 UPDATE users

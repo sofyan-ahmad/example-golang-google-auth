@@ -75,7 +75,7 @@ func Read(email string) (*structs.User, error) {
 	row, err := dot.QueryRow(db, selectEmailQuery, email)
 
 	// Scan => take data
-	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Phone, &user.Address); err != nil {
+	if err := row.Scan(&user.Id, &user.Sub, &user.GivenName, &user.FamilyName, &user.Profile, &user.Picture, &user.Email, &user.EmailVerified, &user.Gender, &user.Address, &user.Phone); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.NotFound(email, err.Error())
 		}
@@ -94,7 +94,7 @@ func Create(user *structs.User) (sql.Result, error) {
 	user.Id = uuid.NewV4().String()
 	password := utils.HashPassword(user.Password)
 	result, err := dot.Exec(db, insertQuery,
-		user.Id, user.Sub, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, password, user.EmailVerified, user.Gender)
+		user.Id, user.Sub, user.GivenName, user.FamilyName, user.Profile, user.Picture, user.Email, password, user.EmailVerified, user.Gender, user.Address, user.Phone)
 
 	if err != nil {
 		return nil, errors.InternalServerError("", err.Error())

@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/structs"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
+	"github.com/sofyanhadia/example-golang-google-auth/structs"
+	"github.com/sofyanhadia/example-golang-google-auth/utils"
 	"github.com/gchaincl/dotsql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/micro/go-micro/errors"

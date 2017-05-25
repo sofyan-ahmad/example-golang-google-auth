@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/database"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/services"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
+	"github.com/sofyanhadia/example-golang-google-auth/database"
+	"github.com/sofyanhadia/example-golang-google-auth/services"
+	"github.com/sofyanhadia/example-golang-google-auth/utils"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

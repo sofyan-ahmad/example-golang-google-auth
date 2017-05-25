@@ -1,7 +1,7 @@
 package services
 
 import (
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/structs"
+	"github.com/sofyanhadia/example-golang-google-auth/structs"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

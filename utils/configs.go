@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/structs"
+	"github.com/sofyanhadia/example-golang-google-auth/structs"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )

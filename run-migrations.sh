@@ -1,1 +1,1 @@
-goose -dir migrations mysql "root:$DBPASSWORD@/cyza" up
+goose -dir migrations mysql "root:$DBPASSWORD@/user_sso" up

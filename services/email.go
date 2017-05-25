@@ -6,11 +6,11 @@ import (
 	"net/smtp"
 	"os"
 
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
+	"github.com/sofyanhadia/example-golang-google-auth/utils"
 )
 
 func SendResetTokenEmail(to string, token string) error {
-	from := "sofyan.h.ahmad@gmail.com"
+	from := os.Getenv("EMAIL")
 	pass := os.Getenv("EMAILPASSWORD")
 
 	msg := "From: " + from + "\n" +

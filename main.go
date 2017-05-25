@@ -5,11 +5,11 @@ import (
 
 	"fmt"
 
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/api"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/database"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/middleware"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/utils"
-	"bitbucket.org/Sofyan_A/sofyan_ahmad_oauth/views"
+	"github.com/sofyanhadia/example-golang-google-auth/api"
+	"github.com/sofyanhadia/example-golang-google-auth/database"
+	"github.com/sofyanhadia/example-golang-google-auth/middleware"
+	"github.com/sofyanhadia/example-golang-google-auth/utils"
+	"github.com/sofyanhadia/example-golang-google-auth/views"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/contrib/renders/multitemplate"
 	"github.com/gin-gonic/gin"
